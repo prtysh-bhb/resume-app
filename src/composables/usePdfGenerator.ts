@@ -7,21 +7,22 @@ export function usePdfGenerator() {
   const generatePdf = async (element: HTMLElement, fileName: string): Promise<void> => {
     try {
       const options = {
-        margin: [0.75, 0.75, 0.75, 0.75],  // Top, Left, Bottom, Right margins in inches
+        margin: 0,  // No extra margins - using element's padding instead
         filename: fileName,
         image: {
           type: 'jpeg',
           quality: 0.98
         },
         html2canvas: {
-          scale: 2.5,
+          scale: 3,  // Higher scale for better quality
           useCORS: true,
           letterRendering: true,
           logging: false,
           scrollY: 0,
           scrollX: 0,
           windowHeight: element.scrollHeight,
-          windowWidth: element.scrollWidth
+          windowWidth: element.scrollWidth,
+          backgroundColor: '#ffffff'
         },
         jsPDF: {
           unit: 'in',
@@ -32,7 +33,8 @@ export function usePdfGenerator() {
         pagebreak: {
           mode: ['avoid-all', 'css', 'legacy'],
           before: '.page-break-before',
-          after: '.page-break-after'
+          after: '.page-break-after',
+          avoid: ['section', '.experience-item']
         }
       };
 
