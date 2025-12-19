@@ -28,112 +28,97 @@ const handleDownloadPdf = async () => {
 </script>
 
 <template>
-  <div class="h-full overflow-y-auto bg-gradient-to-br from-gray-100 to-gray-200 p-8">
-    <div class="max-w-4xl mx-auto space-y-6">
+  <div class="h-full overflow-y-auto bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+    <div class="max-w-4xl mx-auto space-y-4">
       <!-- Download Button -->
-      <div class="flex justify-between items-center">
+      <div class="flex justify-between items-center mb-2">
         <div>
-          <h2 class="text-2xl font-bold text-gray-900">Live Preview</h2>
-          <p class="text-sm text-gray-600 mt-1">Your resume updates in real-time</p>
+          <h2 class="text-xl font-bold text-gray-900">Live Preview</h2>
+          <p class="text-xs text-gray-600 mt-0.5">Updates in real-time</p>
         </div>
         <button
           @click="handleDownloadPdf"
           :disabled="isGenerating"
-          class="btn-primary shadow-elegant-lg"
+          class="btn-primary shadow-elegant-lg flex items-center"
         >
-          <svg v-if="!isGenerating" class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg v-if="!isGenerating" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <svg v-else class="animate-spin w-5 h-5 inline-block mr-2" fill="none" viewBox="0 0 24 24">
+          <svg v-else class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          {{ isGenerating ? 'Generating PDF...' : 'Download PDF' }}
+          <span class="text-sm">{{ isGenerating ? 'Generating...' : 'Download PDF' }}</span>
         </button>
       </div>
 
-      <!-- Resume Preview -->
-      <div class="bg-white shadow-elegant-xl rounded-lg overflow-hidden">
+      <!-- Resume Preview Card -->
+      <div class="bg-white shadow-2xl rounded-xl overflow-hidden border border-gray-200">
         <div
           ref="resumeRef"
-          class="bg-white resume-content"
-          style="width: 8.5in; min-height: 11in; padding: 0.6in 0.7in;"
+          class="resume-container bg-white"
         >
           <!-- Header Section -->
-          <header class="mb-5 pb-4 border-b-2 border-gray-800">
-            <h1 class="text-3xl font-bold text-gray-900 mb-1.5 tracking-tight leading-tight">
+          <header class="header-section">
+            <h1 class="resume-name">
               {{ resumeData.header.name || 'Your Name' }}
             </h1>
-            <p class="text-lg text-gray-700 font-medium mb-2">
+            <p class="resume-title">
               {{ resumeData.header.title || 'Professional Title' }}
             </p>
-            <p class="text-sm text-gray-600 font-medium">
+            <p class="resume-email">
               {{ resumeData.header.email || 'your.email@example.com' }}
             </p>
           </header>
 
           <!-- Profile Overview Section -->
-          <section v-if="resumeData.profileOverview" class="mb-5">
-            <h2 class="text-base font-bold text-gray-900 mb-2 uppercase tracking-wide border-b border-gray-400 pb-1">
-              Professional Summary
-            </h2>
-            <p class="text-sm text-gray-800 leading-relaxed">
+          <section v-if="resumeData.profileOverview" class="resume-section">
+            <h2 class="section-heading">Professional Summary</h2>
+            <p class="section-content">
               {{ resumeData.profileOverview }}
             </p>
           </section>
 
           <!-- Key Highlights Section -->
-          <section v-if="resumeData.keyHighlights.some(h => h.trim())" class="mb-5">
-            <h2 class="text-base font-bold text-gray-900 mb-2 uppercase tracking-wide border-b border-gray-400 pb-1">
-              Key Highlights
-            </h2>
-            <ul class="space-y-1.5">
+          <section v-if="resumeData.keyHighlights.some(h => h.trim())" class="resume-section">
+            <h2 class="section-heading">Key Highlights</h2>
+            <ul class="highlights-list">
               <li
                 v-for="(highlight, index) in resumeData.keyHighlights.filter(h => h.trim())"
                 :key="index"
-                class="text-sm text-gray-800 flex items-start leading-relaxed"
+                class="highlight-item"
               >
-                <span class="inline-block w-1.5 h-1.5 bg-gray-800 rounded-full mt-1.5 mr-2.5 flex-shrink-0"></span>
-                <span class="flex-1">{{ highlight }}</span>
+                {{ highlight }}
               </li>
             </ul>
           </section>
 
           <!-- Professional Experience Section -->
-          <section v-if="resumeData.professionalExperience.some(exp => exp.jobTitle || exp.company)" class="mb-5">
-            <h2 class="text-base font-bold text-gray-900 mb-2 uppercase tracking-wide border-b border-gray-400 pb-1">
-              Professional Experience
-            </h2>
-            <div class="space-y-4">
+          <section v-if="resumeData.professionalExperience.some(exp => exp.jobTitle || exp.company)" class="resume-section">
+            <h2 class="section-heading">Professional Experience</h2>
+            <div class="experience-container">
               <div
                 v-for="(experience, index) in resumeData.professionalExperience.filter(exp => exp.jobTitle || exp.company)"
                 :key="index"
                 class="experience-item"
               >
-                <div class="flex justify-between items-baseline mb-1.5">
-                  <div class="flex-1">
-                    <h3 class="text-sm font-bold text-gray-900 leading-tight">
-                      {{ experience.jobTitle || 'Job Title' }}
-                    </h3>
-                    <p class="text-sm text-gray-700 font-semibold leading-tight">
-                      {{ experience.company || 'Company Name' }}
-                    </p>
+                <div class="experience-header">
+                  <div class="experience-info">
+                    <h3 class="job-title">{{ experience.jobTitle || 'Job Title' }}</h3>
+                    <p class="company-name">{{ experience.company || 'Company Name' }}</p>
                   </div>
-                  <p class="text-xs text-gray-600 font-medium whitespace-nowrap ml-4">
-                    {{ experience.duration || 'Duration' }}
-                  </p>
+                  <p class="job-duration">{{ experience.duration || 'Duration' }}</p>
                 </div>
                 <ul
                   v-if="experience.responsibilities.some(r => r.trim())"
-                  class="space-y-1 mt-1.5"
+                  class="responsibilities-list"
                 >
                   <li
                     v-for="(responsibility, respIndex) in experience.responsibilities.filter(r => r.trim())"
                     :key="respIndex"
-                    class="text-sm text-gray-800 flex items-start leading-relaxed"
+                    class="responsibility-item"
                   >
-                    <span class="inline-block w-1 h-1 bg-gray-700 rounded-full mt-1.5 mr-2.5 flex-shrink-0"></span>
-                    <span class="flex-1">{{ responsibility }}</span>
+                    {{ responsibility }}
                   </li>
                 </ul>
               </div>
@@ -141,42 +126,31 @@ const handleDownloadPdf = async () => {
           </section>
 
           <!-- Technical Skills Section -->
-          <section v-if="resumeData.technicalSkills.some(skill => skill.category || skill.skills)" class="mb-5">
-            <h2 class="text-base font-bold text-gray-900 mb-2 uppercase tracking-wide border-b border-gray-400 pb-1">
-              Technical Skills
-            </h2>
-            <div class="space-y-1.5">
+          <section v-if="resumeData.technicalSkills.some(skill => skill.category || skill.skills)" class="resume-section">
+            <h2 class="section-heading">Technical Skills</h2>
+            <div class="skills-container">
               <div
                 v-for="(skill, index) in resumeData.technicalSkills.filter(s => s.category || s.skills)"
                 :key="index"
-                class="flex text-sm leading-relaxed"
+                class="skill-row"
               >
-                <span class="font-bold text-gray-900 min-w-[140px] flex-shrink-0">
-                  {{ skill.category || 'Category' }}:
-                </span>
-                <span class="text-gray-800 flex-1">
-                  {{ skill.skills || 'Skills' }}
-                </span>
+                <span class="skill-category">{{ skill.category || 'Category' }}:</span>
+                <span class="skill-list">{{ skill.skills || 'Skills' }}</span>
               </div>
             </div>
           </section>
 
           <!-- Project Experience Section -->
-          <section v-if="resumeData.projectExperience.some(proj => proj.title || proj.description)">
-            <h2 class="text-base font-bold text-gray-900 mb-2 uppercase tracking-wide border-b border-gray-400 pb-1">
-              Project Experience
-            </h2>
-            <div class="space-y-3">
+          <section v-if="resumeData.projectExperience.some(proj => proj.title || proj.description)" class="resume-section last-section">
+            <h2 class="section-heading">Project Experience</h2>
+            <div class="projects-container">
               <div
                 v-for="(project, index) in resumeData.projectExperience.filter(p => p.title || p.description)"
                 :key="index"
+                class="project-item"
               >
-                <h3 class="text-sm font-bold text-gray-900 mb-1 leading-tight">
-                  {{ project.title || 'Project Title' }}
-                </h3>
-                <p class="text-sm text-gray-800 leading-relaxed">
-                  {{ project.description || 'Project description' }}
-                </p>
+                <h3 class="project-title">{{ project.title || 'Project Title' }}</h3>
+                <p class="project-description">{{ project.description || 'Project description' }}</p>
               </div>
             </div>
           </section>
@@ -187,42 +161,237 @@ const handleDownloadPdf = async () => {
 </template>
 
 <style scoped>
-.resume-content {
+/* Resume Container */
+.resume-container {
+  width: 8.5in;
+  padding: 0.65in 0.75in;
+  margin: 0 auto;
   font-family: 'Georgia', 'Cambria', 'Times New Roman', serif;
-  line-height: 1.45;
+  color: #1a1a1a;
+  line-height: 1.5;
+  background: white;
 }
 
-.resume-content h1,
-.resume-content h2,
-.resume-content h3 {
+/* Header Section */
+.header-section {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 2.5px solid #1a1a1a;
+}
+
+.resume-name {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.375rem;
   line-height: 1.2;
+  letter-spacing: -0.025em;
 }
 
-/* Ensure proper page breaks for PDF */
+.resume-title {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.resume-email {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Section Styles */
+.resume-section {
+  margin-bottom: 1.25rem;
+}
+
+.last-section {
+  margin-bottom: 0;
+}
+
+.section-heading {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.625rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid #94a3b8;
+}
+
+.section-content {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #1e293b;
+  text-align: justify;
+}
+
+/* Highlights */
+.highlights-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.highlight-item {
+  font-size: 0.875rem;
+  color: #1e293b;
+  margin-bottom: 0.375rem;
+  padding-left: 1rem;
+  position: relative;
+  line-height: 1.55;
+}
+
+.highlight-item::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Experience */
+.experience-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .experience-item {
   page-break-inside: avoid;
   break-inside: avoid;
 }
 
-section {
+.experience-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+}
+
+.experience-info {
+  flex: 1;
+}
+
+.job-title {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
+}
+
+.company-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+  line-height: 1.3;
+}
+
+.job-duration {
+  font-size: 0.8125rem;
+  color: #64748b;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.responsibilities-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.responsibility-item {
+  font-size: 0.875rem;
+  color: #1e293b;
+  margin-bottom: 0.3rem;
+  padding-left: 0.875rem;
+  position: relative;
+  line-height: 1.55;
+}
+
+.responsibility-item::before {
+  content: '◦';
+  position: absolute;
+  left: 0;
+  color: #475569;
+  font-weight: 700;
+}
+
+/* Skills */
+.skills-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skill-row {
+  font-size: 0.875rem;
+  display: flex;
+  line-height: 1.5;
+}
+
+.skill-category {
+  font-weight: 700;
+  color: #0f172a;
+  min-width: 9rem;
+  flex-shrink: 0;
+}
+
+.skill-list {
+  color: #1e293b;
+  flex: 1;
+}
+
+/* Projects */
+.projects-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.project-item {
   page-break-inside: avoid;
   break-inside: avoid;
 }
 
-/* Print styles for better PDF generation */
-@media print {
-  body {
-    margin: 0;
-    padding: 0;
-  }
+.project-title {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.375rem;
+  line-height: 1.3;
+}
 
-  .resume-content {
+.project-description {
+  font-size: 0.875rem;
+  color: #1e293b;
+  line-height: 1.55;
+}
+
+/* Print styles for PDF */
+@media print {
+  .resume-container {
     width: 100%;
     height: auto;
     margin: 0;
-    padding: 0.6in 0.7in !important;
+    padding: 0.65in 0.75in !important;
     box-shadow: none;
   }
+}
+
+/* Page break controls */
+section {
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 </style>
